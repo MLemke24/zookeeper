@@ -4,10 +4,12 @@ const { animals } = require('./data/animals')
 const express = require('express');
 const PORT = process.env.PORT || 3001;
 const app = express();
-  // parse incoming string or array data
+// parse incoming string or array data
 app.use(express.urlencoded({ extended: true }));
-  // parse incoming JSON data
+// parse incoming JSON data
 app.use(express.json());
+// Get css and script for the index
+app.use(express.static('public'));
   
 
 // Query Filter
@@ -99,11 +101,33 @@ app.get('/api/animals/:id', (req, res) => {
     }
   });
 
+  // Get Index.html
+  app.get('/', (req,res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+  });
+
+  // Get Animals html
+  app.get('/animals', (req,res) => {
+    res.sendFile(path.join (__dirname, './public/animals.html'));
+  })
+
+  // Get Zookepers html
+  app.get('/zookeepers', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/zookeepers.html'));
+  });
+
+// Wildcard
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
   // Data Stored In Server
   app.post('/api/animals', (req, res) => {
-      // set id based on what the next index of the array will be
-    req.body.id = animals.length.toString();
-    // add animal to json file and animals array in this functino
+
+    // set id based on what the next index of the array will be
+  req.body.id = animals.length.toString();
+
+    // add animal to json file and animals array in this function
     if (!validateAnimal(req.body)) {
         res.status(400).send('The animal is not properly formatted.');
     } else {
